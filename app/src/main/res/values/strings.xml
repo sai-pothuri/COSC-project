@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">COSC</string>
+    <string-array name="branch">
+        <item>CSE</item>
+        <item>IT</item>
+        <item>ECE</item>
+        <item>EEE</item>
+        <item>MECH</item>
+        <item>CIVIL</item>
+        <item>CHEMICAL</item>
+        <item>BIOTECH</item>
+        <item>PROD</item>
+    </string-array>
+    <integer-array name="semester">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </integer-array>
+    <string-array name="examtype">
+        <item>Internal</item>
+        <item>External</item>
+    </string-array>
+    <string-array name="subtype">
+        <item>MID1</item>
+        <item>MID2</item>
+        <item>Main</item>
+        <item>Backlog</item>
+    </string-array>
+    <integer-array name="year">
+        <item>2016</item>
+        <item>2017</item>
+        <item>2018</item>
+        <item>2019</item>
+    </integer-array>
+    <string name="title_activity_main4">MainActivity4</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+</resources>

@@ -32,12 +32,12 @@ public class MainActivity3 extends AppCompatActivity {
     User date;
     Button date_button;
     String Request_no;
-    String postUrl2 = "";//url for sending request_no goes here//
+    String postUrl2 = "http://cbit-qp-api.herokuapp.com/qpreq";//url for sending request_no goes here//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
-        fetchData process = new fetchData();
+        fetchData2 process = new fetchData2();
         process.execute();
         date_button = findViewById(R.id.date_btn);
         date_button.setOnClickListener(new View.OnClickListener() {

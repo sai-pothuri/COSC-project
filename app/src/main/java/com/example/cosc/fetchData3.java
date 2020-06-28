@@ -22,7 +22,7 @@ public class fetchData3 extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         try {
-            URL url = new URL("");//url for fetching image//
+            URL url = new URL("http://cbit-qp-api.herokuapp.com/qpreq");//url for fetching image//
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             InputStream inputStream = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));

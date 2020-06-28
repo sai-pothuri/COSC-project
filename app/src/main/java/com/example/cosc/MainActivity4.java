@@ -15,8 +15,13 @@ public class MainActivity4 extends AppCompatActivity {
         setContentView(R.layout.activity_main4);
         ImageView imageView = findViewById(R.id.imageView);
         String base64Image = fetchData3.image_base64;
-        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        imageView.setImageBitmap(decodedByte);
+        try {
+            byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            imageView.setImageBitmap(decodedByte);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

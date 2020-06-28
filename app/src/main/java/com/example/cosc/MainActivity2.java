@@ -32,7 +32,7 @@ import okhttp3.Response;
 public class MainActivity2 extends AppCompatActivity {
     Button subjectbtn;
     User sub;
-    static String postUrl1 = "";//url for sending subject details goes here//
+    static String postUrl1 = "http://cbit-qp-api.herokuapp.com/get-yearwise";//url for sending subject details goes here//
     public TextView errortext;
 
     @Override
@@ -52,34 +52,43 @@ public class MainActivity2 extends AppCompatActivity {
         Spinner spinner_sub = (Spinner) findViewById(R.id.subjectsp);
         List<User> subject_list = new ArrayList<>();
         //add subjects array ka data into this spinner bro//
-        for (int i = 0; i < fetchData.subjects.length; i++) {
-            sub = new User(fetchData.subjects[i]);
-            subject_list.add(sub);
+        try {
+            for (int i = 0; i < fetchData.subjects.length; i++) {
+                sub = new User(fetchData.subjects[i]);
+                subject_list.add(sub);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         ArrayAdapter<User> adapter_sub = new ArrayAdapter<User>(this, android.R.layout.simple_spinner_item, subject_list);
         adapter_sub.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_sub.setAdapter(adapter_sub);
         spinner_sub.setPrompt("select subject");
-        String text_sub = spinner_sub.getSelectedItem().toString();
+        try {
+            String text_sub = spinner_sub.getSelectedItem().toString();
 
-        //from here is the thing//
-        if (text_sub.length() == 0) {
-            Toast.makeText(getApplicationContext(), "Something is wrong. Please check your inputs.", Toast.LENGTH_LONG).show();
-        } else {
-            JSONObject details = new JSONObject();
-            try {
-                details.put("branch_name", MainActivity.text1);
-                details.put("sem_no", MainActivity.text2);
-                details.put("exam_type", MainActivity.text3);
-                details.put("subtype", MainActivity.text4);
-                details.put("subject_name", text_sub);
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            //from here is the thing//
+            if (text_sub.length() == 0) {
+                Toast.makeText(getApplicationContext(), "Something is wrong. Please check your inputs.", Toast.LENGTH_LONG).show();
+            } else {
+                JSONObject details = new JSONObject();
+                try {
+                    details.put("branch_name", MainActivity.text1);
+                    details.put("sem_no", MainActivity.text2);
+                    details.put("exam_type", MainActivity.text3);
+                    details.put("subtype", MainActivity.text4);
+                    details.put("subject_name", text_sub);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), details.toString());
+                postRequest(postUrl1, body);
             }
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), details.toString());
-            postRequest(postUrl1, body);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     public void postRequest(String postUrl, RequestBody postBody) {

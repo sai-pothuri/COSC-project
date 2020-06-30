@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mQueue = Volley.newRequestQueue(this);
-        subjects = new ArrayList<String>();
+        subjects = new ArrayList<>();
 
         spinner1 = findViewById(R.id.branchsp);
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.branch, android.R.layout.simple_spinner_item);
@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     public void jsonparse(){
+        String url1 = postUrl + "?" + "branch_name="+text1+"&sem_no="+text2+"&exam_type="+text3+"&subtype="+text4;
+        text = "red";
         JsonArrayRequest request= new JsonArrayRequest(Request.Method.GET, modified_url(postUrl), null,
                 new Response.Listener<JSONArray>() {
                     @Override

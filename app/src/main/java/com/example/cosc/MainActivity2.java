@@ -17,6 +17,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -40,6 +42,8 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        dates = new ArrayList<>();
+        request_no = new ArrayList<>();
         subjectbtn = findViewById(R.id.subjectbtn);
         errortext = findViewById(R.id.errortext);
         subjectbtn.setOnClickListener(new View.OnClickListener() {
@@ -104,6 +108,7 @@ public class MainActivity2 extends AppCompatActivity {
             }
         }
         );
+        mQueue = Volley.newRequestQueue(this);
         mQueue.add(request);
     }
     public static String modified_url(String url){

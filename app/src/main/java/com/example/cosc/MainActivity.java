@@ -1,153 +1,156 @@
 package com.example.cosc;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
-import android.util.Log;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.widget.Toast;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import java.io.IOException;
-import java.util.Objects;
-
-import okhttp3.Response;
-
-import static okhttp3.RequestBody.create;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     static String postUrl = "http://cbit-qp-api.herokuapp.com/get-subjects";//url for sending branch details go here//
     public static String text1, text2, text3, text4;
+    public Spinner spinner1, spinner2, spinner3, spinner4;
+    public static String text;
+    private RequestQueue mQueue;
+    public static ArrayList<String> subjects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mQueue = Volley.newRequestQueue(this);
+        subjects = new ArrayList<String>();
 
-        Spinner spinner1 = findViewById(R.id.branchsp);
+        spinner1 = findViewById(R.id.branchsp);
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.branch, android.R.layout.simple_spinner_item);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter1);
         spinner1.setPrompt("select branch");
-        text1 = spinner1.getSelectedItem().toString();
+        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                text1 = adapterView.getItemAtPosition(p).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
-
-        Spinner spinner2 = (Spinner) findViewById(R.id.semestersp);
+        spinner2 = (Spinner) findViewById(R.id.semestersp);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.semester, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner2.setAdapter(adapter2);
         spinner2.setPrompt("select semester");
-        try {
-            text2 = spinner2.getSelectedItem().toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                text2 = adapterView.getItemAtPosition(p).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
-        Spinner spinner3 = (Spinner) findViewById(R.id.examtypesp);
+        spinner3 = (Spinner) findViewById(R.id.examtypesp);
         ArrayAdapter<CharSequence> adapter3 = ArrayAdapter.createFromResource(this, R.array.examtype, android.R.layout.simple_spinner_item);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(adapter3);
         spinner3.setPrompt("select exam-type");
-        text3 = spinner3.getSelectedItem().toString();
+        spinner3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                text3 = adapterView.getItemAtPosition(p).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
-        Spinner spinner4 = (Spinner) findViewById(R.id.subtypesp);
+
+        spinner4 = (Spinner) findViewById(R.id.subtypesp);
         ArrayAdapter<CharSequence> adapter4 = ArrayAdapter.createFromResource(this, R.array.subtype, android.R.layout.simple_spinner_item);
         adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner4.setAdapter(adapter4);
         spinner4.setPrompt("select sub-type");
-        text4 = spinner4.getSelectedItem().toString();
-        try {
-            if (text1.length() == 0 || text2.length() == 0 || text3.length() == 0 || text4.length() == 0) {
-                Toast.makeText(getApplicationContext(), "Something is wrong. Please check your inputs.", Toast.LENGTH_LONG).show();
-            } else {
-                JSONObject details = new JSONObject();
-                try {
-                    details.put("branch_name", text1);
-                    details.put("sem_no", text2);
-                    details.put("exam_type", text3);
-                    details.put("subtype", text4);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                RequestBody body = create(MediaType.parse("application/json; charset=utf-8"), details.toString());
-                postRequest(postUrl, body);
+        spinner4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                text4 = adapterView.getItemAtPosition(p).toString();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Button button1 = (Button) findViewById(R.id.viewbtn);
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        Button button1 = findViewById(R.id.viewbtn);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                jsonparse();
                 openActivity2();
             }
         });
     }
-    public void postRequest(String postUrl, RequestBody postBody) {
-        OkHttpClient client = new OkHttpClient();
-        final Request request = new Request.Builder()
-                .url(postUrl)
-                .post(postBody)
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/json")
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure( Call call, IOException e) {
-                call.cancel();
-                Log.d("FAIL", Objects.requireNonNull(e.getMessage()));
-                runOnUiThread(new Runnable() {
-                    @SuppressLint("SetTextI18n")
+    public void jsonparse(){
+        JsonArrayRequest request= new JsonArrayRequest(Request.Method.GET, modified_url(postUrl), null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void run() {
-                        TextView responseText = findViewById(R.id.errortext);
-                        responseText.setText("Failed to Connect to Server. Please Try Again.");
-                    }
-                });
-            }
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final TextView responseTextRegister = findViewById(R.id.errortext);
-                try {
-
-                    final String responseString = response.body().string().trim();
-                    runOnUiThread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void run() {
-                            if (responseString.equals("success")) {
-                                responseTextRegister.setText("");
-                                finish();
-                            }
-                            else {
-                                responseTextRegister.setText(responseString);
+                    public void onResponse(JSONArray response) {
+                            try {
+                                for (int i = 0; i < response.length(); i++) {
+                                    JSONObject JO = response.getJSONObject(i);
+                                    subjects.add(JO.getString("subject_name"));
+                                }
+                            } catch (JSONException ex) {
+                                ex.printStackTrace();
                             }
                         }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
             }
-        });
+        }
+        );
+        mQueue.add(request);
+    }
+    public static String modified_url(String url){
+        if(!url.endsWith("?"))
+            url += "?";
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+        if (text1 != null && text2 != null){
+            params.add(new BasicNameValuePair("branch_name", text1));
+            params.add(new BasicNameValuePair("sem_no", text2));
+            params.add(new BasicNameValuePair("exam_type", text3));
+            params.add(new BasicNameValuePair("subtype", text4));
+        }
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+        url += paramString;
+        return url;
     }
     public void openActivity2() {
         Intent intent = new Intent(this, MainActivity2.class);
         startActivity(intent);
-
     }
 }

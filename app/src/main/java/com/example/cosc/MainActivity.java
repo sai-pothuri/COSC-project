@@ -27,19 +27,17 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     static String postUrl = "http://cbit-qp-api.herokuapp.com/get-subjects";//url for sending branch details go here//
-    public static String text1, text2, text3, text4;
+    public String text1, text2, text3, text4;
+    public static String Text1, Text2, Text3, Text4;
     public Spinner spinner1, spinner2, spinner3, spinner4;
     public static String text;
     private RequestQueue mQueue;
-    public static ArrayList<String> subjects;
+    public static ArrayList<String> subjects = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mQueue = Volley.newRequestQueue(this);
-        subjects = new ArrayList<>();
-
         spinner1 = findViewById(R.id.branchsp);
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.branch, android.R.layout.simple_spinner_item);
         adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -48,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
         spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                spinner1.setSelection(p, false);
                 text1 = adapterView.getItemAtPosition(p).toString();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
         spinner2 = (Spinner) findViewById(R.id.semestersp);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.semester, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -63,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                spinner2.setSelection(p, false);
                 text2 = adapterView.getItemAtPosition(p).toString();
             }
             @Override
@@ -78,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         spinner3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                spinner3.setSelection(p, false);
                 text3 = adapterView.getItemAtPosition(p).toString();
             }
             @Override
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         spinner4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                spinner4.setSelection(p, false);
                 text4 = adapterView.getItemAtPosition(p).toString();
             }
             @Override
@@ -105,28 +106,31 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Text1 = text1;
+                Text2 = text2;
+                Text3 = text3;
+                Text4 = text4;
                 jsonparse();
-                openActivity2();
             }
         });
     }
     public void jsonparse(){
-        String url1 = postUrl + "?" + "branch_name="+text1+"&sem_no="+text2+"&exam_type="+text3+"&subtype="+text4;
         text = "red";
         JsonArrayRequest request= new JsonArrayRequest(Request.Method.GET, modified_url(postUrl), null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                            try {
-                                for (int i = 0; i < response.length(); i++) {
-                                    JSONObject JO = response.getJSONObject(i);
-                                    subjects.add(JO.getString("subject_name"));
-                                }
-                            } catch (JSONException ex) {
-                                ex.printStackTrace();
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject JO = response.getJSONObject(i);
+                                String s = JO.getString("subject_name");
+                                subjects.add(s);
+                                openActivity2();
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+                    }
                     }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -134,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         );
+
+        mQueue = Volley.newRequestQueue(MainActivity.this);
         mQueue.add(request);
     }
     public static String modified_url(String url){
@@ -141,11 +147,12 @@ public class MainActivity extends AppCompatActivity {
             url += "?";
         List<NameValuePair> params = new LinkedList<NameValuePair>();
 
-        if (text1 != null && text2 != null){
-            params.add(new BasicNameValuePair("branch_name", text1));
-            params.add(new BasicNameValuePair("sem_no", text2));
-            params.add(new BasicNameValuePair("exam_type", text3));
-            params.add(new BasicNameValuePair("subtype", text4));
+
+        if (Text1 != null && Text2 != null){
+            params.add(new BasicNameValuePair("branch_name", Text1));
+            params.add(new BasicNameValuePair("sem_no", Text2));
+            params.add(new BasicNameValuePair("exam_type", Text3));
+            params.add(new BasicNameValuePair("subtype", Text4));
         }
         String paramString = URLEncodedUtils.format(params, "utf-8");
         url += paramString;

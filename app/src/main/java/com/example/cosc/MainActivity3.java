@@ -8,11 +8,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
@@ -30,6 +35,7 @@ public class MainActivity3 extends AppCompatActivity {
     private RequestQueue mQueue;
     public static String Request_no;
     public static String image_base64;
+    public Spinner spinner_date;
     String postUrl2 = "http://cbit-qp-api.herokuapp.com/qpreq";//url for sending request_no goes here//
     public static String text_date;
     @Override
@@ -37,15 +43,20 @@ public class MainActivity3 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
         date_button = findViewById(R.id.date_btn);
+        TextView errortext = (TextView) findViewById(R.id.textView6);
         date_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for (int j = 0; j < MainActivity2.dates.size(); j++) {
+                    if (MainActivity2.dates.get(j) == (text_date)) {
+                        Request_no = MainActivity2.request_no.get(j);
+                    }
+                }
                 jsonparse();
-                openActivity4();
             }
         });
         //spinner//
-        Spinner spinner_date = (Spinner) findViewById(R.id.spinner_date);
+        spinner_date = findViewById(R.id.spinner_date);
         List<User> date_list = new ArrayList<>();
         for (int i = 0; i < MainActivity2.dates.size(); i++) {
             date = new User(MainActivity2.dates.get(i));
@@ -55,19 +66,19 @@ public class MainActivity3 extends AppCompatActivity {
         adapter_date.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_date.setAdapter(adapter_date);
         spinner_date.setPrompt("select date");
-        spinner_date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
-                text_date = adapterView.getItemAtPosition(p).toString();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-        for (int j = 0; j < MainActivity2.dates.size(); j++) {
-            if (MainActivity2.dates.get(j).equals(text_date)) {
-                Request_no = MainActivity2.request_no.get(j);
-            }
+        try {
+            spinner_date.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int p, long l) {
+                    text_date = adapterView.getItemAtPosition(p).toString();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public void jsonparse(){
@@ -78,6 +89,7 @@ public class MainActivity3 extends AppCompatActivity {
                         try {
                             JSONObject JO = response.getJSONObject(0);
                             image_base64 = JO.getString("image");
+                            openActivity4();
 
                             } catch (JSONException e) {
                             e.printStackTrace();
@@ -90,6 +102,7 @@ public class MainActivity3 extends AppCompatActivity {
             }
         }
         );
+        mQueue = Volley.newRequestQueue(MainActivity3.this);
         mQueue.add(request);
     }
     public static String modified_url(String url){
@@ -105,7 +118,7 @@ public class MainActivity3 extends AppCompatActivity {
         return url;
     }
     public void openActivity4() {
-        Intent intent = new Intent(this, MainActivity3.class);
+        Intent intent = new Intent(this, MainActivity4.class);
         startActivity(intent);
 
     }
